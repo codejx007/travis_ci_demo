@@ -1,2 +1,79 @@
-language: dart
-script: true
+jobs:
+  include:
+    - os: linux
+      language: android
+      licenses:
+        - 'android-sdk-preview-license-.+'
+        - 'android-sdk-license-.+'
+        - 'google-gdk-license-.+'
+      # 声明需要安装的 Android 组件
+      android:
+        components:
+          - tools
+          - platform-tools
+          - build-tools-32.0.0
+          - android-29
+          - sys-img-armeabi-v7a-google_apis-25
+          - extra-android-m2repository
+          - extra-google-m2repository
+          - extra-google-android-support
+      jdk: oraclejdk8
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - libstdc++6
+            - fonts-droid
+      before_script:
+        - wget https://services.gradle.org/distributions/gradle-3.5-bin.zip
+        - unzip -qq gradle-3.5-bin.zip
+        - export GRADLE_HOME=$PWD/gradle-3.5
+        - export PATH=$GRADLE_HOME/bin:$PATH
+        - git clone https://github.com/flutter/flutter.git -b stable --depth 1
+        - yes | sdkmanager "platforms;android-29"
+        - yes | sdkmanager "build-tools;28.0.3"
+      script:
+        - ./flutter/bin/flutter -v build apk
+      before_deploy:
+        # Set up git user name and tag this commit
+        - git config --local user.name "codejx007"
+        - git config --local user.email "117708402@qq.com"
+        - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+        - git tag $TRAVIS_TAG
+      deploy:
+        provider: releases
+        cleanup: false
+        token: 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
+        file:
+          - build/app/outputs/apk/app-release.apk
+    #        on:
+    #          tags: true
+    - os: osx
+      language: objective-c
+      osx_image: xcode13.2
+      before_script:
+        - brew update
+        #        - brew install --HEAD libimobiledevice
+        - brew install ideviceinstaller
+        - brew install ios-deploy
+        - git clone https://github.com/flutter/flutter.git -b stable --depth 1
+      script:
+        - ./flutter/bin/flutter -v build ios --no-codesign
+      before_deploy:
+        - mkdir app && mkdir app/Payload
+        - cp -r build/ios/iphoneos/Runner.app app/Payload
+        - pushd app && zip -r -m app.ipa Payload  && popd
+      # 将 ipa 上传至 github release
+      deploy:
+        provider: releases
+        token: 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
+        file:
+          - app/app.ipa
+          cleanup: false
+#        on:
+#          tags: true
+
+cache:
+  directories:
+    - $HOME/.pub-cache
