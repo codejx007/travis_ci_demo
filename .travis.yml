@@ -1,6 +1,3 @@
-language: dart
-script:
-  - dart main.dart
 jobs:
   include:
     - language: android
@@ -75,9 +72,6 @@ jobs:
         file:
           - app/app.ipa
           cleanup: false
-#        on:
-#          tags: true
-
 cache:
   directories:
     - $HOME/.pub-cache
