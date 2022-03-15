@@ -4,7 +4,7 @@ jobs:
       dist: trusty
       os: linux
       licenses:
-        - 'android-sdk-preview-license-52d11cd2'
+        - 'android-sdk-preview-license-.+'
         - 'android-sdk-license-.+'
         - 'google-gdk-license-.+'
       # 声明需要安装的 Android 组件
@@ -20,6 +20,7 @@ jobs:
           - extra-google-m2repository
           - extra-android-m2repository
       jdk: oraclejdk8
+      sudo: false
       addons:
         apt:
           sources:
@@ -50,28 +51,28 @@ jobs:
         file:
           - build/app/outputs/apk/app-release.apk
 
-#    - language: objective-c
-#      os: osx
-#      osx_image: xcode13.2
-#      before_script:
-#        - brew update
-#        #        - brew install --HEAD libimobiledevice
-#        - brew install ideviceinstaller
-#        - brew install ios-deploy
-#        - git clone https://github.com/flutter/flutter.git -b stable --depth 1
-#      script:
-#        - ./flutter/bin/flutter -v build ios --no-codesign
-#      before_deploy:
-#        - mkdir app && mkdir app/Payload
-#        - cp -r build/ios/iphoneos/Runner.app app/Payload
-#        - pushd app && zip -r -m app.ipa Payload  && popd
-#      # 将 ipa 上传至 github release
-#      deploy:
-#        provider: releases
-#        token: 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
-#        file:
-#          - app/app.ipa
-#          cleanup: false
+    - language: objective-c
+      os: osx
+      osx_image: xcode13.2
+      before_script:
+        - brew update
+        #        - brew install --HEAD libimobiledevice
+        - brew install ideviceinstaller
+        - brew install ios-deploy
+        - git clone https://github.com/flutter/flutter.git -b stable --depth 1
+      script:
+        - ./flutter/bin/flutter -v build ios --no-codesign
+      before_deploy:
+        - mkdir app && mkdir app/Payload
+        - cp -r build/ios/iphoneos/Runner.app app/Payload
+        - pushd app && zip -r -m app.ipa Payload  && popd
+      # 将 ipa 上传至 github release
+      deploy:
+        provider: releases
+        token: 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
+        file:
+          - app/app.ipa
+          cleanup: false
 #cache:
 #  directories:
 #    - $HOME/.pub-cache
