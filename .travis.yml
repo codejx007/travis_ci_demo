@@ -124,14 +124,13 @@ jobs:
       deploy:
         provider: releases
         cleanup: false
-        api_key: ${GITHUB_TOKEN}
+        token: ${GITHUB_TOKEN}
         file:
           - build/app/outputs/apk/app-release.apk
           - build/app.flx
         edge: true
-#        on:
-#          repo: SunnyGirl0915/flutter_demo
-#          tags: true
+        on:
+          tags: true
     - os: osx
       language: objective-c
       osx_image: xcode13.2
@@ -153,12 +152,11 @@ jobs:
         provider: releases
         cleanup: false
         # 用你的api_key替代
-        api_key: ${GITHUB_TOKEN}
+        token: ${GITHUB_TOKEN}
         file: $APK_OUTPUT
         edge: true
-#        on:
-#          repo: SunnyGirl0915/flutter_demo
-#          tags: true
+        on:
+          tags: true
 
 cache:
   directories:
