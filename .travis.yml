@@ -129,6 +129,7 @@ jobs:
           - build/app/outputs/apk/app-release.apk
           - build/app.flx
         edge: true
+        file_glob: true
         on:
           tags: true
     - os: osx
@@ -153,7 +154,9 @@ jobs:
         cleanup: false
         # 用你的api_key替代
         token: ${GITHUB_TOKEN}
-        file: $APK_OUTPUT
+        file_glob: true
+        file:
+          - app/app.ipa
         edge: true
         on:
           tags: true
