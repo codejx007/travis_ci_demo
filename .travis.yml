@@ -115,12 +115,12 @@ jobs:
         - yes | sdkmanager "build-tools;28.0.3"
       script:
         - ./flutter/bin/flutter -v build apk
-      before_deploy:
-        # Set up git user name and tag this commit
-        - git config --local user.name "codejx007"
-        - git config --local user.email "117708402@qq.com"
-        - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
-        - git tag $TRAVIS_TAG
+#      before_deploy:
+#        # Set up git user name and tag this commit
+#        - git config --local user.name "codejx007"
+#        - git config --local user.email "117708402@qq.com"
+#        - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+#        - git tag $TRAVIS_TAG
       deploy:
         provider: releases
         cleanup: false
@@ -145,10 +145,13 @@ jobs:
         - ./flutter/bin/flutter -v build ios --no-codesign
       before_deploy:
         # Set up git user name and tag this commit
-        - git config --local user.name "codejx007"
-        - git config --local user.email "117708402@qq.com"
-        - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
-        - git tag $TRAVIS_TAG
+#        - git config --local user.name "codejx007"
+#        - git config --local user.email "117708402@qq.com"
+#        - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+#        - git tag $TRAVIS_TAG
+        - mkdir app && mkdir app/Payload
+        - cp -r build/ios/iphoneos/Runner.app app/Payload
+        - pushd app && zip -r -m app.ipa Payload  && popd
       deploy:
         provider: releases
         cleanup: false
