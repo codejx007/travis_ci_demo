@@ -82,11 +82,11 @@ jobs:
   include:
     - os: linux
       language: android
-      licenses:
-        - 'android-sdk-preview-license-.+'
-        - 'android-sdk-license-.+'
-        - 'google-gdk-license-.+'
       android:
+        licenses:
+          - 'android-sdk-preview-license-52d11cd2'
+          - 'android-sdk-license-.+'
+          - 'google-gdk-license-.+'
         components:
           - tools
           - platform-tools
@@ -124,7 +124,7 @@ jobs:
       deploy:
         provider: releases
         cleanup: false
-        token: ${GITHUB_TOKEN}
+        api_key: ${GITHUB_TOKEN}
         file:
           - build/app/outputs/apk/app-release.apk
           - build/app.flx
@@ -153,8 +153,7 @@ jobs:
         provider: releases
         cleanup: false
         # 用你的api_key替代
-        api_key:
-          secure: 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
+        api_key: ${GITHUB_TOKEN}
         file: $APK_OUTPUT
         edge: true
 #        on:
