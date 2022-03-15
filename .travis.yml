@@ -4,6 +4,7 @@ script:
 jobs:
   include:
     - language: android
+      dist: trusty
       os: linux
       licenses:
         - 'android-sdk-preview-license-.+'
