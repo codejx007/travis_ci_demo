@@ -4,7 +4,7 @@ jobs:
       dist: trusty
       os: linux
       licenses:
-        - 'android-sdk-preview-license-.+'
+        - 'android-sdk-preview-license-52d11cd2'
         - 'android-sdk-license-.+'
         - 'google-gdk-license-.+'
       # 声明需要安装的 Android 组件
@@ -15,9 +15,10 @@ jobs:
           - build-tools-32.0.0
           - android-29
           - sys-img-armeabi-v7a-google_apis-25
-          - extra-android-m2repository
+          # Additional components
+          - extra-google-google_play_services
           - extra-google-m2repository
-          - extra-google-android-support
+          - extra-android-m2repository
       jdk: oraclejdk8
       addons:
         apt:
@@ -48,3 +49,28 @@ jobs:
         token: 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
         file:
           - build/app/outputs/apk/app-release.apk
+    - language: objective-c
+      os: osx
+      osx_image: xcode13.2
+      before_script:
+        - brew update
+        #        - brew install --HEAD libimobiledevice
+        - brew install ideviceinstaller
+        - brew install ios-deploy
+        - git clone https://github.com/flutter/flutter.git -b stable --depth 1
+      script:
+        - ./flutter/bin/flutter -v build ios --no-codesign
+      before_deploy:
+        - mkdir app && mkdir app/Payload
+        - cp -r build/ios/iphoneos/Runner.app app/Payload
+        - pushd app && zip -r -m app.ipa Payload  && popd
+      # 将 ipa 上传至 github release
+      deploy:
+        provider: releases
+        token: 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
+        file:
+          - app/app.ipa
+          cleanup: false
+#cache:
+#  directories:
+#    - $HOME/.pub-cache
