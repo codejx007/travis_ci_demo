@@ -1,11 +1,10 @@
 language: dart
 script:
   - dart main.dart
-
 jobs:
   include:
-    - os: linux
-      language: android
+    - language: android
+      os: linux
       licenses:
         - 'android-sdk-preview-license-.+'
         - 'android-sdk-license-.+'
@@ -53,8 +52,8 @@ jobs:
           - build/app/outputs/apk/app-release.apk
     #        on:
     #          tags: true
-    - os: osx
-      language: objective-c
+    - language: objective-c
+      os: osx
       osx_image: xcode13.2
       before_script:
         - brew update
