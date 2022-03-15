@@ -1,13 +1,91 @@
+#jobs:
+#  include:
+#    - language: android
+#      dist: trusty
+#      os: linux
+#      licenses:
+#        - 'android-sdk-preview-license-.+'
+#        - 'android-sdk-license-.+'
+#        - 'google-gdk-license-.+'
+#      # 声明需要安装的 Android 组件
+#      android:
+#        components:
+#          - tools
+#          - platform-tools
+#          - build-tools-32.0.0
+#          - android-29
+#          - sys-img-armeabi-v7a-google_apis-25
+#          # Additional components
+#          - extra-google-google_play_services
+#          - extra-google-m2repository
+#          - extra-android-m2repository
+#      jdk: oraclejdk8
+#      sudo: false
+#      addons:
+#        apt:
+#          sources:
+#            - ubuntu-toolchain-r-test
+#          packages:
+#            - libstdc++6
+#            - fonts-droid
+#      before_script:
+#        - wget https://services.gradle.org/distributions/gradle-3.5-bin.zip
+#        - unzip -qq gradle-3.5-bin.zip
+#        - export GRADLE_HOME=$PWD/gradle-3.5
+#        - export PATH=$GRADLE_HOME/bin:$PATH
+#        - git clone https://github.com/flutter/flutter.git -b stable --depth 1
+#        - yes | sdkmanager "platforms;android-29"
+#        - yes | sdkmanager "build-tools;28.0.3"
+#      script:
+#        - ./flutter/bin/flutter -v build apk
+#      before_deploy:
+#        # Set up git user name and tag this commit
+#        - git config --local user.name "codejx007"
+#        - git config --local user.email "117708402@qq.com"
+#        - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+#        - git tag $TRAVIS_TAG
+#      deploy:
+#        provider: releases
+#        cleanup: false
+#        token: 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
+#        file:
+#          - build/app/outputs/apk/app-release.apk
+#
+#    - language: objective-c
+#      os: osx
+#      osx_image: xcode13.2
+#      before_script:
+#        - brew update
+#        #        - brew install --HEAD libimobiledevice
+#        - brew install ideviceinstaller
+#        - brew install ios-deploy
+#        - git clone https://github.com/flutter/flutter.git -b stable --depth 1
+#      script:
+#        - ./flutter/bin/flutter -v build ios --no-codesign
+#      before_deploy:
+#        - mkdir app && mkdir app/Payload
+#        - cp -r build/ios/iphoneos/Runner.app app/Payload
+#        - pushd app && zip -r -m app.ipa Payload  && popd
+#      # 将 ipa 上传至 github release
+#      deploy:
+#        provider: releases
+#        token: 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
+#        file:
+#          - app/app.ipa
+#          cleanup: false
+#cache:
+#  directories:
+#    - $HOME/.pub-cache
+
+
 jobs:
   include:
-    - language: android
-      dist: trusty
-      os: linux
+    - os: linux
+      language: android
       licenses:
         - 'android-sdk-preview-license-.+'
         - 'android-sdk-license-.+'
         - 'google-gdk-license-.+'
-      # 声明需要安装的 Android 组件
       android:
         components:
           - tools
@@ -15,16 +93,15 @@ jobs:
           - build-tools-32.0.0
           - android-29
           - sys-img-armeabi-v7a-google_apis-25
-          # Additional components
-          - extra-google-google_play_services
-          - extra-google-m2repository
           - extra-android-m2repository
+          - extra-google-m2repository
+          - extra-google-android-support
       jdk: oraclejdk8
-      sudo: false
       addons:
         apt:
+          # Flutter depends on /usr/lib/x86_64-linux-gnu/libstdc++.so.6 version GLIBCXX_3.4.18
           sources:
-            - ubuntu-toolchain-r-test
+            - ubuntu-toolchain-r-test # if we don't specify this, the libstdc++6 we get is the wrong version
           packages:
             - libstdc++6
             - fonts-droid
@@ -47,12 +124,16 @@ jobs:
       deploy:
         provider: releases
         cleanup: false
-        token: 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
+        token: ${GITHUB_TOKEN}
         file:
           - build/app/outputs/apk/app-release.apk
-
-    - language: objective-c
-      os: osx
+          - build/app.flx
+        edge: true
+#        on:
+#          repo: SunnyGirl0915/flutter_demo
+#          tags: true
+    - os: osx
+      language: objective-c
       osx_image: xcode13.2
       before_script:
         - brew update
@@ -63,16 +144,23 @@ jobs:
       script:
         - ./flutter/bin/flutter -v build ios --no-codesign
       before_deploy:
-        - mkdir app && mkdir app/Payload
-        - cp -r build/ios/iphoneos/Runner.app app/Payload
-        - pushd app && zip -r -m app.ipa Payload  && popd
-      # 将 ipa 上传至 github release
+        # Set up git user name and tag this commit
+        - git config --local user.name "codejx007"
+        - git config --local user.email "117708402@qq.com"
+        - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+        - git tag $TRAVIS_TAG
       deploy:
         provider: releases
-        token: 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
-        file:
-          - app/app.ipa
-          cleanup: false
-#cache:
-#  directories:
-#    - $HOME/.pub-cache
+        cleanup: false
+        # 用你的api_key替代
+        api_key:
+          secure: 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
+        file: $APK_OUTPUT
+        edge: true
+#        on:
+#          repo: SunnyGirl0915/flutter_demo
+#          tags: true
+
+cache:
+  directories:
+    - $HOME/.pub-cache
